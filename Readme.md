@@ -1,5 +1,6 @@
 # o:XML
 [![Java CI](https://github.com/SamuraiCrow/oXML/actions/workflows/ant.yml/badge.svg)](https://github.com/SamuraiCrow/oXML/actions/workflows/ant.yml)
+
 This is version 1.7 of o:XML.  Originally built with JDK 1.3.
 
 You may encounter bugs in this release.  If you do, please report
