@@ -25,4 +25,3 @@ jobs:
       run: ant -noinput -buildfile build.xml compile
     - name: Run tests with Ant
       run: ant -noinput -buildfile build.xml tests
-	  
