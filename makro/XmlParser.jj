@@ -1,0 +1,224 @@
+
+/* Short Markup Language (SML) */
+
+options { IGNORE_CASE = true; STATIC = false; UNICODE_INPUT = true; } 
+
+PARSER_BEGIN(XmlParser)
+
+public class XmlParser {
+
+  private java.io.PrintStream out = System.out;
+
+  public void setOutputStream(java.io.PrintStream out){
+      this.out = out;
+  }
+
+  public static void main(String args[]) throws ParseException {
+    XmlParser parser = new XmlParser(System.in);
+    parser.Document();
+  }
+
+}
+
+PARSER_END(XmlParser)
+
+<IN_MIXED, DEFAULT> TOKEN :
+{
+  < LANGLE: "<" > : IN_MARKUP
+| < ENDTAG: "</" > : IN_MARKUP
+| < STARTPI: "<?" > : IN_MARKUP
+| < STARTPROLOG: "<?xml " > : IN_MARKUP
+}
+
+<IN_MARKUP> TOKEN :
+{
+  < RANGLE: ">" > : IN_MIXED
+| < CLOSEDTAG: "/>" > : IN_MIXED
+| < ENDPI: "?>" > : IN_MIXED
+}
+
+<IN_MARKUP, IN_MIXED, DEFAULT> TOKEN :
+{
+  < WHITESPACE: ( " " | "\t" | "\n" | "\r" )+ >
+}
+
+<IN_MARKUP> TOKEN :
+{
+  < EQUALS: "=" >
+| < LITERAL: "'" ( ~["'"] )* "'" | "\"" ( ~["\""] )* "\"" >
+| < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>|":"|"-")* >
+| < LETTER:
+      [
+       "\u0024",
+       "\u0041"-"\u005a",
+       "\u005f",
+       "\u0061"-"\u007a",
+       "\u00c0"-"\u00d6",
+       "\u00d8"-"\u00f6",
+       "\u00f8"-"\u00ff",
+       "\u0100"-"\u1fff",
+       "\u3040"-"\u318f",
+       "\u3300"-"\u337f",
+       "\u3400"-"\u3d2d",
+       "\u4e00"-"\u9fff",
+       "\uf900"-"\ufaff"
+      ]
+  >
+|
+  < DIGIT:
+      [
+       "\u0030"-"\u0039",
+       "\u0660"-"\u0669",
+       "\u06f0"-"\u06f9",
+       "\u0966"-"\u096f",
+       "\u09e6"-"\u09ef",
+       "\u0a66"-"\u0a6f",
+       "\u0ae6"-"\u0aef",
+       "\u0b66"-"\u0b6f",
+       "\u0be7"-"\u0bef",
+       "\u0c66"-"\u0c6f",
+       "\u0ce6"-"\u0cef",
+       "\u0d66"-"\u0d6f",
+       "\u0e50"-"\u0e59",
+       "\u0ed0"-"\u0ed9",
+       "\u1040"-"\u1049"
+      ]
+  >
+}
+
+// TOKEN :
+// {
+//   < STARTCOMMENT: "<!--" > : IN_COMMENT
+// }
+
+// <IN_COMMENT> TOKEN :
+// {
+//   < ENDCOMMENT: "-->" > : DEFAULT
+// | < COMMENT: ( ~["-"] | "-" ~["-"] )+ >
+// }
+
+<IN_MIXED, DEFAULT> TOKEN :
+{
+  < STARTCOMMENT: "<!--" > : IN_COMMENT
+}
+
+<IN_COMMENT> TOKEN :
+{
+  < ENDCOMMENT: "-->" > : IN_MIXED
+| < ENDCOMMENT_EOL: "-->" ( "\n" | "\r" | "\r\n" ) > : IN_MIXED
+| < COMMENT: ( ~["-"] | "-" ~["-"] )+ >
+}
+
+<IN_MIXED> TOKEN :
+{
+  < TEXT: ( ~[ "<" ] )+ >
+}
+
+void ws() :
+{Token t;}
+{
+        t=<WHITESPACE>
+                { out.print(t.image); }
+}
+
+String Name() :
+{Token t;}
+{
+        t=<IDENTIFIER>
+                { return t.image; }
+}
+
+String AttributeValue() :
+{Token t;}
+{
+      t=<LITERAL>
+                { return t.image; }
+}
+
+void Text() :
+{Token t;}
+{
+       ( t=<TEXT> )
+                { out.print("\""+t.image+"\""); } // todo: substitute " with \"
+}
+
+void AttributeList() :
+{}
+{
+        ( ws() | Attribute() )*
+}
+
+void Attribute() :
+{ String n; String v;}
+{
+        n=Name()
+                { out.print(n); }
+        ( ws() )? <EQUALS>
+                { out.print("="); }
+        ( ws() )? v=AttributeValue()
+                { out.print(v); }
+}
+
+void Element() :
+{String n;}
+{
+        <LANGLE> n=Name()
+                { out.print(n); }
+            AttributeList()
+            ( <RANGLE> 
+                { out.print("{"); }
+              MixedContent()
+              <ENDTAG> Name() <RANGLE>
+                { out.print("}"); }
+            | 
+            <CLOSEDTAG>
+                { out.print(";"); }
+            )
+}
+
+void Document() :
+{}
+{
+        ( Prolog() )?
+        ( ProcessingInstruction() | Comment() | ws() )*
+        Element()
+        ( ws() )?
+}
+
+void MixedContent() :
+{}
+{
+        ( Element() | Text() | Comment() | ProcessingInstruction() | ws() )*
+}
+
+void Comment() :
+{Token c;}
+{
+        <STARTCOMMENT> c=<COMMENT> 
+        ( <ENDCOMMENT>
+                { out.print("--"+c.image+"--"); }
+        | <ENDCOMMENT_EOL>
+                { out.println("//"+c.image); }
+        )
+}
+
+void ProcessingInstruction() :
+{Token t;}
+{
+        <STARTPI> t=<IDENTIFIER>
+                { out.print("!"+t.image); }
+        AttributeList()
+        <ENDPI>
+                { out.print("!"); }
+}
+
+void Prolog() :
+{Token p;}
+{
+        <STARTPROLOG> 
+                { out.print("!sml"); }
+        AttributeList()  // todo: refine, fix
+        <ENDPI>
+                { out.print("!"); }
+}
+

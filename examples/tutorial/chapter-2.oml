@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate logging  -->
+<program xmlns:o="http://www.o-xml.org/lang/">
+
+  <!-- example 2.1 -->
+  <o:set i="1"/>
+  <o:log msg="the string value of $i is: {$i}."/>
+  <o:log>
+    <info>the value of $i is: <o:eval select="$i"/></info>
+  </o:log>
+
+</program>

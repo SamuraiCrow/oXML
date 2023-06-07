@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate the use of node manipulation functions  -->
+<program xmlns:o="http://www.o-xml.org/lang/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+  <o:variable name="newItems">
+    <rdf:li resource="http://vendue.pingdynasty.com/view.oml?itemId=10"/>
+    <rdf:li resource="http://vendue.pingdynasty.com/view.oml?itemId=11"/>
+    <rdf:li resource="http://xml.com/pub/2003/08/09/shoom/index.html" />
+    <rdf:li resource="http://vendue.pingdynasty.com/view.oml?itemId=13"/>
+  </o:variable>
+
+  <!-- example 5.1 -->
+  <!-- create an RSS channel -->
+  <o:variable name="channel">
+    <title>XML.com</title>
+    <link>http://xml.com/pub</link>
+    <description>
+      XML.com features a rich mix of information and services 
+      for the XML community.
+    </description>
+
+    <items>
+      <rdf:Seq>
+        <rdf:li resource="http://xml.com/pub/2000/08/09/xslt/xslt.html" />
+        <rdf:li resource="http://xml.com/pub/2000/08/09/rdfdb/index.html" />
+      </rdf:Seq>
+    </items>
+  </o:variable>
+
+  <!-- replace the description -->
+  <o:do select="$channel/description/text().replace('XML.com is great!')"/>
+
+  <!-- add some items to the sequence -->
+  <o:do select="$channel/items/rdf:Seq.append($newItems)"/>
+
+  <!-- remove all items with resources outside xml.com -->
+  <o:do select="$channel/items/rdf:Seq/rdf:li[not(starts-with(@resource, 'http://xml.com/'))].remove()"/>
+
+  <o:eval select="$channel"/>
+</program>

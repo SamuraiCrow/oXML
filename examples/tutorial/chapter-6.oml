@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate conditionals  -->
+<program xmlns:o="http://www.o-xml.org/lang/">
+
+  <!-- example 6.1 -->
+  <o:if test="1 = 0">never!</o:if>
+  <o:if test="1 > 0">always!"</o:if>
+
+  <!-- example 6.2 -->
+  <o:set i="1"/>
+  <o:choose>
+    <o:when test="1 = 0">
+      <o:log msg="we know this will never happen"/>
+    </o:when>
+    <o:when test="$i = 0">
+      <o:log msg="this might happen"/>
+    </o:when>
+    <o:otherwise>
+      <o:log msg="otherwise this will happen"/>
+    </o:otherwise>
+  </o:choose>
+
+  <!-- example 6.3 -->
+  <o:while test="true()">
+    <yes/>
+  </o:while>
+
+</program>

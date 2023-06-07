@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate the use of variables  -->
+<program xmlns:o="http://www.o-xml.org/lang/">
+
+  <!-- example 3.1 -->
+  <o:variable name="title" select="'Lissie'"/>
+  <o:variable name="channel">
+    <channel>
+      <title><o:eval select="$title"/></title>
+    </channel>
+  </o:variable>
+
+  <o:set title="'Bessie'"/>
+
+  <o:eval select="$title"/>
+
+  <o:eval select="$channel"/>
+
+</program>

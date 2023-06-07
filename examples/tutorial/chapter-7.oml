@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate iterations -->
+<program xmlns:o="http://www.o-xml.org/lang/">
+
+  <!-- example 7.1. Iteration over nodeset -->
+  <o:variable name="planets">
+    <pluto/>
+    <jupiter/>
+    <mercurius/>
+  </o:variable>
+  <o:for-each name="planet" select="$planets">
+    Kelly sees <o:eval select="name($planet)"/>.
+  </o:for-each>
+
+  <!-- example 7.2. Iteration over numbers -->
+  <o:variable name="sum" select="0"/>
+  <o:for-each name="num" to="10">
+    <o:set sum="$sum + $num"/>
+  </o:for-each>
+
+  <o:eval select="$sum"/>
+
+  <!-- example 7.2. Iteration over string tokens -->
+  <o:for-each name="word" in="comma,separated,values" delim=",">
+    <!-- the default value of 'delim' is space, ' ' -->
+    <o:element name="{$word}"/>
+  </o:for-each>
+
+</program>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate how to dynamically generate nodes  -->
+<program xmlns:o="http://www.o-xml.org/lang/">
+
+  <!-- example 1.1 -->
+  <o:element name="bean">
+    <o:attribute name="name" select="'Illy'"/>
+    <o:attribute name="type">coffee</o:attribute>
+    this is a coffee bean
+  </o:element>
+
+  <!-- example 1.2 -->
+  <o:processing-instruction target="xml-stylesheet">href="style.xsl" type="text/xsl"</o:processing-instruction>
+
+
+  <!-- example 1.3 -->
+  <o:comment select="'i am commenting this'"/>
+  <o:text>  leading and trailing whitespace might otherwise have been removed  </o:text>
+
+  <!-- example 1.4 -->
+  <o:variable name="dynamic" select="'dynamic'"/>
+  <example>here is some mixed static and <o:eval select="$dynamic"/> content.</example>
+
+</program>

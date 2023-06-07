@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate procedures -->
+<program xmlns:o="http://www.o-xml.org/lang/"
+  xmlns:ex="http://www.o-xml.org/examples">
+
+  <!-- Example 8.2. User Example, the Procedure -->
+
+  <o:procedure name="ex:user">
+    <o:param name="name"/>
+    <o:param name="password"/>
+    <o:param name="role" select="'guest'"/><!-- 'guest' is the default value of this parameter -->
+    <o:do>
+      <user>
+        <o:attribute name="name" select="$name"/> <!-- add the 'name' attribute to the 'user' element -->
+        <o:attribute name="role" select="$role"/> <!-- add the 'role' attribute -->
+        <password><o:eval select="$password"/></password>
+        <privileges>
+          <o:choose>
+            <o:when test="$role = 'administrator'">
+              <!-- administrators can do anything -->
+              <read/>
+              <write/>
+              <remove/>
+            </o:when>
+            <o:when test="$role = 'guest'">
+              <!-- guests may only read -->
+              <read/>
+            </o:when>
+            <o:otherwise>
+              <!-- all other users may read and write, but not remove -->
+              <read/>
+              <write/>
+            </o:otherwise>
+          </o:choose>
+        </privileges>
+      </user>
+    </o:do>
+  </o:procedure>
+
+  <!-- Example 8.3. User Example, Using the Procedure -->
+
+  <ex:user name="'Eddie'" password="'salad'"/>
+
+
+  <!-- Example 8.4. String Replace Function -->
+  <o:function name="ex:replace">
+    <o:param name="input" type="String"/>
+    <o:param name="from" type="String"/>
+    <o:param name="to" type="String"/>
+    <o:do>
+      <o:variable name="result"/>
+      <o:while test="contains($input, $from)">
+        <o:set result="concat($result, substring-before($input, $from), $to)"/>
+        <o:set input="substring-after($input, $from)"/>
+      </o:while>
+      <o:return select="concat($result, $input)"/>
+    </o:do>
+  </o:function>
+
+  <o:eval select="ex:replace('there is no place like home', 'home', 'space')"/>
+
+</program>

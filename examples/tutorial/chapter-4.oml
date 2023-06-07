@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- examples that demonstrate the use of type functions  -->
+<program xmlns:o="http://www.o-xml.org/lang/">
+
+  <!-- example 4.1 -->
+  <o:variable name="stock">
+    <product name="stereo">
+      <price>250.00</price>
+      <condition>flawless</condition>
+    </product>
+  </o:variable>
+
+  <!-- output the price plus VAT -->
+  <o:eval select="$stock/product/price.number() * 1.175"/>
+
+  <!-- create an element that has the name of the product -->
+  <o:variable name="stereo" select="Element($stock/product/@name)"/>
+
+  <o:eval select="$stereo"/>
+  
+</program>
